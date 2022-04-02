@@ -1,0 +1,86 @@
+.nametag {
+    /* user-select: none; */
+    display: block;
+    /* box-decoration-break: clone; */
+    /* -webkit-box-decoration-break: clone; */
+    position: absolute;
+    background: #010101;
+    /* background: #224466; */
+    color: #EEE;
+    margin: 5px 7px 5px 7px;
+    padding: 5px;
+    font-size: 120%;
+}
+.nametag .userid {
+    font-size: 110%;
+    /* color: #999; */
+}
+.nametag .username {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.nametag .latency {
+    /* font-family: monospace; */
+	font-family: Consolas, monospace;
+    /* font-size: 110%; */
+}
+
+.nametag .em {
+    filter: invert(1%);
+}
+
+.nametag .fastrt {
+    color: #FE0;
+}
+
+.nametag .slowrt {
+    color: #F40;
+}
+
+
+
+#p0 .nametag.default {
+    top: 0;
+    right: 0;
+}
+#p1 .nametag.default {
+    top: 0;
+    left: 0;
+}
+#p2 .nametag.default {
+    bottom: 0;
+    right: 0;
+}
+#p3 .nametag.default {
+    bottom: 0;
+    left: 0;
+}
+
+
+
+.playerscreen .nametag.topright {
+    top: 0;
+    right: 0;
+}
+
+
+
+#p0 .nametag.corners {
+    top: 0;
+    left: 0;
+}
+#p1 .nametag.corners {
+    top: 0;
+    right: 0;
+}
+#p2 .nametag.corners {
+    bottom: 0;
+    left: 0;
+}
+#p3 .nametag.corners {
+    bottom: 0;
+    right: 0;
+}

@@ -1,0 +1,77 @@
+#websocketchat {
+    direction: rtl;
+    width: 500px;
+    height: 220px;
+    overflow-x: auto;
+    overflow-y: scroll;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 120%;
+    z-index: 2;
+}
+
+#websocketchat .messages {
+    direction: ltr;
+}
+
+#websocketchat .messages li {
+    display: block;
+    list-style: none;
+    padding: 4px 0px 4px 1px;
+}
+
+#websocketchat .messages li > span {
+    display: inline;
+    background: #010101;
+    padding: 4px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
+#websocketchat .messages li > span > span {
+    position: relative;
+}
+
+#websocketchat .messages li > span > span .alwayshidden {
+    font-size: 0px;
+}
+
+/* hide user id until mouse over */
+#websocketchat .messages li > span > span .hidden {
+    font-size: 0px;
+}
+#websocketchat .messages li > span:hover > span .hidden {
+    font-size: inherit;
+}
+
+
+#websocketchat .messages .chat {
+    color: #FFF;
+}
+#websocketchat .messages .command {
+    color: #9CF;
+}
+#websocketchat .messages .status {
+    color: #FF0;
+}
+#websocketchat .messages .warn {
+    color: #F00;
+}
+
+
+
+
+#websocketchat::-webkit-scrollbar {
+    width: 6px;
+    background-color: #010101;
+}
+#websocketchat::-webkit-scrollbar-track {
+    background: #010101;
+}
+#websocketchat::-webkit-scrollbar-thumb {
+    background: #999;
+}
+#websocketchat::-webkit-scrollbar-thumb:hover {
+    background: #FFF;
+}

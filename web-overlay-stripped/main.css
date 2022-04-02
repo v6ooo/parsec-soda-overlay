@@ -1,0 +1,60 @@
+html, body {
+	height: 100%;
+}
+
+body {
+	background: #000;
+	margin: 0;
+	padding: 0;
+	font-family: Arial, Helvetica, sans-serif;
+	/* font-size: 16px; */
+	font-size: 100%;
+	color: #FFF;
+	overflow: hidden;
+}
+
+#status {
+	top: 0px;
+	left: 300px;
+	position: absolute;
+	padding: 10px;
+	font-family: Consolas, monospace;
+	white-space: pre;
+	font-size: 80%;
+}
+
+#loading {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#loading .loadingborder {
+	width: 500px;
+	border: 1px solid #000;
+	background: #123;
+	position: relative;
+}
+
+#loading .loadingbar {
+	background: #369;
+	position: absolute;
+	height: 100%;
+	z-index: 1;
+}
+
+#loading .loadingtext {
+	font-family: Consolas, monospace;
+	position: relative;
+	z-index: 2;
+	/* font-size: 22px; */
+	padding: 0.5em 0.5em 0.5em 1em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

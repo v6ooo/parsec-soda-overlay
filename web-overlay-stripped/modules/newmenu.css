@@ -1,0 +1,132 @@
+.nav {
+	position: absolute;
+	top: 0;
+	left: 0;
+	/* font-family: monospace; */
+	/* width: 300px; */
+	display: inline-block;
+	/* pointer-events: none; */
+	user-select: none;
+	z-index: 5;
+
+}
+
+.nav a {
+	text-decoration: none;
+	padding: 0.5em;
+	display: block;
+}
+
+.nav ul {
+	border: 2px solid #010101;
+	background: #555;
+	list-style: none;
+	margin: 0;
+	/* padding-left: 0; */
+	padding: 0;
+	/* width: 300px; */
+}
+
+.nav li {
+	color: #fff;
+	background: #333;
+	display: block;
+	/* float: left; */
+	/* padding: 1rem; */
+	/* padding: 1rem 0 1rem 0; */
+	position: relative;
+	text-decoration: none;
+	/* transition-duration: 0.5s; */
+	border-bottom: 2px solid #222;
+	white-space: nowrap;
+}
+
+.nav li:last-child {
+	border-bottom: none;
+}
+
+.nav li a {
+	color: #fff;
+}
+
+.nav li:hover,
+.nav li:focus-within {
+	background: #090;
+	cursor: pointer;
+}
+
+.nav li:focus-within a {
+	outline: none;
+}
+
+/* sub menu */
+.nav ul li ul {
+	background: orange;
+	visibility: hidden;
+	opacity: 0;
+	/* min-width: 5rem; */
+	position: absolute;
+	/* transition: all 0.5s ease; */
+	/* margin-top: 1rem; */
+	/* left: 290px; */
+	/* left: 100%; */
+	/* top: -1em; */
+	top: -2px;
+	left: 100%;
+	/* margin-top: -2rem; */
+	display: none;
+}
+
+.nav ul li:hover > ul,
+.nav ul li:focus-within > ul,
+.nav ul li ul:hover,
+.nav ul li ul:focus {
+	visibility: visible;
+	opacity: 1;
+	display: block;
+}
+
+.nav ul li ul li {
+	clear: both;
+	/* width: 100%; */
+}
+
+.nav {
+	
+}
+
+.nav li span {
+	float: right;
+	/* text-align: right; */
+	/* display: block; */
+	font-size: 0.8em;
+	font-weight: bold;
+	/* float: right; */
+	margin-left: 1em;
+	/* line-height: 10px; */
+	/* position: absolute; */
+	/* position: relative; */
+	/* right: 0; */
+	/* margin-left: 1em; */
+	/* top: -0.1em; */
+	/* vertical-align: top; */
+}
+
+#trigger {
+	outline: none;
+	position: absolute;
+	top: -35px;
+	left: -35px;
+	width: 50px;
+	height: 50px;
+	transform: rotate(-45deg);
+	background-color: #010101;
+	/* border: 3px solid #010101; */
+	border: 0px none;
+	/* border-radius: 50%; */
+	z-index: 9;
+}
+
+#trigger:active {
+	background-color: #FFF;
+}
