@@ -1,8 +1,14 @@
 "use strict";
 {
+    const PORT = config.websocketPort;
+    const HOST = config.websocketHost;
+    const PATH = config.websocketPath;
+    const PASSWORD = config.websocketPassword;
+
 	let m = new Module();
 	o.ws = m;
-	m.connection = null;
+	m.connection = { readyState: 4 };
+	// readyState 0=Connecting, 1=Open, 2=Closing, 3=Closed
 	m.host = {
 		id: 0,
 		userid: 0,
@@ -24,7 +30,9 @@
 	}
 
 	let setGamepad = function(index, id, userid, username) {
-		index += localPlayer.length;
+		if (typeof localPlayer !== "undefined") {
+			index += localPlayer.length;
+		}
 		if (!m.gamepads[index]) m.gamepads[index] = {};
 		m.gamepads[index].id = id;
 		m.gamepads[index].userid = userid;
@@ -72,8 +80,10 @@
 
 	m.handler.metrics = function(e, data) {
 		m.guests = [];
-		for (const lp of localPlayer) {
-			m.guests.push(lp);
+		if (typeof localPlayer !== "undefined") {
+			for (const lp of localPlayer) {
+				m.guests.push(lp);
+			}
 		}
 		for (const d of data.content) {
 			m.guests.push({
@@ -120,8 +130,10 @@
 
 	m.handler.gamepadall = function(e, data) {
 		m.gamepads = [];
-		for (const lp of localPlayer) {
-			m.gamepads.push(lp); // will push some extra metric data but who cares
+		if (typeof localPlayer !== "undefined") {
+			for (const lp of localPlayer) {
+				m.gamepads.push(lp); // will push some extra metric data but who cares
+			}
 		}
 		for (const d of data.content) {
 			m.gamepads.push(d);
@@ -145,8 +157,7 @@
 		setGamepad(data.toindex, data.toid, data.touserid, data.tousername);
 	}
 
-	m.init = function() {
-		// m.connection = new WebSocket(m.url, 'overlay');
+	m.connectFunction = function() {
 		m.connection = new WebSocket("ws://"+HOST+":"+PORT+PATH, 'overlay');
 		m.connection.addEventListener('close', function (event) {
 			executeHandler(event, { type: "serverdisconnect" });
@@ -161,5 +172,19 @@
 			executeHandler(event, msg);
 		});
 	}
-	setTimeout(m.init, 250); // delay connection
+	m.connect = function() {
+		if (m.connection.close) m.connection.close();
+		setTimeout(m.connectFunction, 250);
+	}
+
+	m.init = function() {
+		m.connect();
+	}
+	m.init();
+
+	m.thisMenu = ["WebSocket", [
+		["Reconnect", m.connect],
+	] ];
+	m.addMenu(m.thisMenu);
+
 }

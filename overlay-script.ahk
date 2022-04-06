@@ -107,7 +107,8 @@ showChat() {
 ;	Setup overlay transparency
 
 getOverlayWindow() {
-	return WinExist("Overlay ahk_exe chrome.exe")
+	;return WinExist("Overlay ahk_exe chrome.exe")
+	return WinExist("Soda Overlay")
 }
 
 #^z::

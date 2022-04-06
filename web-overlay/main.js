@@ -1,25 +1,56 @@
+/*
+
+z-index
+
+playerscreen		10-30
+websocketnametag	40
+chatwheel			50-53
+websocketchat		70
+newmenu				100-102
+
+*/
 "use strict";
 const o = {};
 o.gamepadLimit = 3; // 0-3
 o.loadTheseJS = [
 	"../config",
+	// "gamepad/xbox",
 ];
 o.loadTheseModules = [
-	"newmenu",
+	"menu",
 	"playerscreen",
+	"chatwheel",
+	// "controls",
 	"websocket",
 	"websocketchat",
 	"websocketnametag",
+	// "websocketusers",
+	// "text",
 ];
 
 {
 	let fileName = document.currentScript.src.replace(/.+\/(.+\.\w+)/, "$1");
-	console.log("Load: %s", fileName);
+	console.log("Loading up to: %s", fileName);
 	o.temporaryTimeStamp = 0;
 	document.currentScript.addEventListener("load", event => {
 		o.temporaryTimeStamp = event.timeStamp;
 		console.log("Loaded "+ fileName +" after "+ event.timeStamp +" ms");
 	});
+
+	o.changeColorBrightness = function(hex, lum) {
+		hex = String(hex).replace(/[^0-9a-f]/gi, '');
+		if (hex.length < 6) {
+			hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+		}
+		lum = lum || 0;
+		var rgb = "#", c, i;
+		for (i = 0; i < 3; i++) {
+			c = parseInt(hex.substr(i*2,2), 16);
+			c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+			rgb += ("00"+c).substr(c.length);
+		}
+		return rgb;
+	}
 
 	o.escapeHtml = function(text) {
 		var map = {
@@ -54,13 +85,13 @@ o.loadTheseModules = [
 			console.log(arguments);
 			var string = msg.toLowerCase();
 			var substring = "script error";
-			if (string.indexOf(substring) > -1){
-				o.status.innerHTML += `Script Error: ${url}\n`;
-			}
-			else {
+			// if (string.indexOf(substring) > -1){
+			// 	o.status.innerHTML += `Script Error: ${url}\n`;
+			// }
+			// else {
 				let message = `${url} - ${lineNo}:${columnNo} - ${msg}\n`;
 				o.status.innerHTML += message;
-			}
+			// }
 			return false;
 		};
 
@@ -145,6 +176,9 @@ o.loadTheseModules = [
 			// setTimeout(()=>{
 				o.loading.style.display = "none";
 			// },500);
+			if (config.defaultScale) {
+				document.body.style.fontSize = config.defaultScale +"%";
+			}
 		}
 
 		function next() {
@@ -211,11 +245,8 @@ class Module {
 		o.container.appendChild(this.container);
 	}
 	addMenu(ma) {
-		// if (o.module.menu) {
-		// 	o.module.menu.add(ma);
-		// }
-		if (o.module.newmenu) {
-			o.module.newmenu.add(ma);
+		if (o.module.menu) {
+			o.module.menu.add(ma);
 		}
 	}
 	lock(state) {

@@ -8,7 +8,11 @@
     top: 0;
     left: 0;
     font-size: 120%;
-    z-index: 2;
+    z-index: 70;
+}
+
+#websocketchat.paused {
+    background: #012;
 }
 
 #websocketchat .messages {
@@ -51,6 +55,10 @@
 }
 #websocketchat .messages .command {
     color: #9CF;
+    font-size: 80%;
+    /* white-space: pre-wrap; */
+    white-space: pre-line;
+    font-weight: bold;
 }
 #websocketchat .messages .status {
     color: #FF0;
@@ -60,11 +68,9 @@
 }
 
 
-
-
 #websocketchat::-webkit-scrollbar {
     width: 6px;
-    background-color: #010101;
+    background: #010101;
 }
 #websocketchat::-webkit-scrollbar-track {
     background: #010101;

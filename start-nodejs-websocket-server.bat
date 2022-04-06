@@ -1,3 +1,3 @@
 @title Node.js WebSocket Server
-@node.exe .
+@node.exe nodejs-websocket-server\.
 pause

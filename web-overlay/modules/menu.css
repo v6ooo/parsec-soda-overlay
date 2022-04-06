@@ -1,0 +1,62 @@
+#menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    user-select: none;
+    font-weight: bold;
+    text-shadow: 0 0 2px #000, 0 0 2px #000, 0 0 2px #000, 0 0 2px #000, 0 0 2px #000;
+}
+
+#menu ul {
+    position: absolute;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: none;
+    z-index: 100;
+    cursor: pointer;
+}
+#menu li {
+    background: #222;
+    padding: 1em 2em 1em 1em;
+    border: 1px solid #010101;
+    white-space: nowrap;
+}
+
+#menu li span {
+    position: absolute;
+    right: 0.5em;
+    font-size: 80%;
+    font-weight: bold;
+}
+
+#menu .selected {
+    background: #090;
+}
+
+#menu .selectedsub {
+    background: #262;
+}
+
+#menu .click {
+    background: #0C0;
+}
+
+#trigger {
+	outline: none;
+	position: absolute;
+	top: -35px;
+	left: -35px;
+	width: 50px;
+	height: 50px;
+	transform: rotate(-45deg);
+	background-color: #010101;
+	/* border: 3px solid #010101; */
+	border: 0px none;
+	/* border-radius: 50%; */
+	z-index: 101;
+}
+
+#trigger:active {
+	background-color: #FFF;
+}

@@ -1,20 +1,19 @@
 .nametag {
-    /* user-select: none; */
-    display: block;
-    /* box-decoration-break: clone; */
-    /* -webkit-box-decoration-break: clone; */
+    /* display: block; */
     position: absolute;
+    /* align-self: center; */
     background: #010101;
-    /* background: #224466; */
     color: #EEE;
     margin: 5px 7px 5px 7px;
     padding: 5px;
     font-size: 120%;
+    z-index: 40;
 }
+
 .nametag .userid {
     font-size: 110%;
-    /* color: #999; */
 }
+
 .nametag .username {
     white-space: nowrap;
     overflow: hidden;
@@ -23,9 +22,7 @@
 }
 
 .nametag .latency {
-    /* font-family: monospace; */
 	font-family: Consolas, monospace;
-    /* font-size: 110%; */
 }
 
 .nametag .em {
@@ -66,6 +63,24 @@
     right: 0;
 }
 
+.playerscreen .nametag.bottomright {
+    bottom: 0;
+    right: 0;
+}
+
+
+.playerscreen .nametag.top {
+    top: 0;
+}
+.playerscreen .nametag.bottom {
+    bottom: 0;
+}
+.playerscreen .nametag.left {
+    left: 0;
+}
+.playerscreen .nametag.right {
+    right: 0;
+}
 
 
 #p0 .nametag.corners {

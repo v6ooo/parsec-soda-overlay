@@ -12,8 +12,8 @@ const server = http.createServer(function(request, response) {
     response.end();
 });
 const wss = new WebSocket.Server({ noServer: true });
-server.listen(config.PORT, config.HOST, function() {
-    console.log((new Date()) + ' Server is listening on '+ config.HOST +":"+ config.PORT + config.PATH);
+server.listen(config.websocketPort, config.websocketHost, function() {
+    console.log((new Date()) + ' Server is listening on '+ config.websocketHost +":"+ config.websocketPort + config.websocketPath);
 });
 
 let connections = [];
@@ -40,7 +40,7 @@ function authenticate(ws, data, isBinary) {
 		if (!isBinary) {
 			const msg = JSON.parse(data.toString());
 			if (msg.type ==  "identify") {
-				if (msg.password == config.PASSWORD)
+				if (msg.password == config.websocketPassword)
 				{
 					console.log(`(${ws.id}) Authenticated (${ws.remoteAddress})`);
 					clearTimeout(ws.authenticationTimer);
@@ -101,7 +101,7 @@ wss.on('connection', function connection(ws, request, connectionType) {
 
 server.on('upgrade', async function upgrade(request, socket, head) {
 	let connectionType = "";
-	if (request.url != config.PATH) {
+	if (request.url != config.websocketPath) {
 		console.log(`Rejected connection. Path incorrect (${socket.remoteAddress})`);
 		socket.destroy();
 		return;

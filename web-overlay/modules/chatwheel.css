@@ -1,0 +1,84 @@
+.chatwheel {
+    position: absolute;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-content: center;
+    user-select: none;
+}
+
+.chatwheel .selectwheel {
+    display: block;
+    position: absolute;
+    align-self: center;
+    visibility: hidden;
+    z-index: 52;
+}
+
+.chatwheel .emote {
+    width: 1.5em;
+    height: 1.5em;
+    margin-left: -0.75em;
+    margin-top: -0.75em;
+    font-size: 300%;
+    border-radius: 50%;
+    background: #010101;
+    position: absolute;
+    text-align: center;
+    filter: invert(1%);
+    z-index: 53;
+    white-space: nowrap;
+}
+.chatwheel .emote.selected {
+    background: #FFF;
+}
+
+.chatwheel .emote.text {
+    width: 3em;
+    height: 1em;
+    margin-left: -1.5em;
+    margin-top: -0.5em;
+    font-size: 200%;
+    border-radius: 10%;
+}
+.chatwheel .emote.text.selected {
+    background: #010101;
+    color: #FF0;
+}
+
+
+.chatwheel .selectedemote {
+    position: absolute;
+    align-self: center;
+    font-size: 1200%;
+    filter: invert(1%);
+    visibility: hidden;
+    z-index: 51;
+}
+
+.chatwheel .selectedemote.top {
+    top: 0.15em;
+}
+.chatwheel .selectedemote.bottom {
+    bottom: 0.15em;
+}
+.chatwheel .selectedemote.left {
+    left: 0.15em;
+}
+.chatwheel .selectedemote.right {
+    right: 0.15em;
+}
+
+.chatwheel .selectwheel.top {
+    top: 10em;
+}
+.chatwheel .selectwheel.bottom {
+    bottom: 10em;
+}
+.chatwheel .selectwheel.left {
+    left: 10em;
+}
+.chatwheel .selectwheel.right {
+    right: 10em;
+}

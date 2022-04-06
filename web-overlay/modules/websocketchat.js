@@ -8,12 +8,14 @@
 	// let clearDuration = 15000; // 15 sec
 	let maxMessages = 200;
 
+	let hideTimer;
+	let pauseScroll = false;
+
 	let messages = document.createElement("div");
 	messages.className = "messages";
 	m.container.appendChild(messages);
-	let hideTimer;
 
-	o.module.newmenu.trigger.addEventListener("contextmenu", function(event) {
+	o.module.menu.trigger.addEventListener("contextmenu", function(event) {
 		m.container.style.display = (m.container.style.display != 'none') ? 'none' : 'block';
 		event.preventDefault();
 		return false;
@@ -26,8 +28,23 @@
 		m.container.style.visibility = newStyle;
 	}
 
+	m.container.addEventListener("scroll", function(event) {
+		let currentScroll = this.scrollTop
+		let maxScroll = this.scrollHeight-this.clientHeight;
+		if (currentScroll+20 < maxScroll) {
+			pauseScroll = true;
+			this.className = "paused";
+			m.stopHideChat()
+		}
+		else {
+			pauseScroll = false;
+			this.className = null;
+			m.showChat();
+		}
+	});
+
 	m.scrollDown = function() {
-		m.container.scrollTop = m.container.scrollHeight;
+		if (!pauseScroll) m.container.scrollTop = m.container.scrollHeight;
 	}
 
 	let stringToHslColor = function(str, s, l) {
@@ -69,17 +86,21 @@
 		}
 	}
 
+	m.stopHideChat = function() {
+		clearTimeout(hideTimer);
+	}
+
 	m.showChat = function() {
 		// m.container.style.visibility = 'visible';
 		m.container.style.display = 'block';
-		clearTimeout(hideTimer);
+		m.stopHideChat();
 		// clearTimeout(clearTimer);
-		hideTimer = setTimeout(m.hideChat, visibleDuration);
+		if (!pauseScroll) hideTimer = setTimeout(m.hideChat, visibleDuration);
 	}
 
 	m.hideChat = function() {
 		// m.container.style.visibility = 'hidden';
-		m.container.style.display = 'none';
+		if (!pauseScroll) m.container.style.display = 'none';
 		// clearTimer = setTimeout(clearChat, clearDuration);
 	}
 
@@ -88,20 +109,20 @@
 	}
 
 	m.addMessage = function(event, data) {
-		let i = document.createElement('li');
-		let ii = document.createElement('span');
-		let iii = document.createElement('span');
-		i.appendChild(ii);
-		ii.appendChild(iii);
-		if (data.type) ii.classList.add(data.type);
+		let li = document.createElement('li');
+		let wrapbox = document.createElement('span');
+		let msg = document.createElement('span');
+		li.appendChild(wrapbox);
+		wrapbox.appendChild(msg);
+		if (data.type) wrapbox.classList.add(data.type);
 		let html = '<span class="alwayshidden">'+ getTimestring() +'</span>';
 		if (data.type == "chat") {
 			let nameColor = stringToHslColor(data.username+data.id+data.userid, 100, 80);
 			html += '<span style="color: '+nameColor+'">'+ data.username +'</span><span class="hidden"> #'+ data.userid +'</span>: ';
 		}
 		html += escapeHtml(data.content);
-		iii.innerHTML = html;
-		messages.appendChild(i);
+		msg.innerHTML = html;
+		messages.appendChild(li);
 		m.removeMessages();
 		m.showChat();
 		m.scrollDown();
@@ -109,13 +130,6 @@
 
 	o.ws.addHook("chat", m.addMessage);
 	o.ws.addHook("command", m.addMessage);
-
-	m.thisMenu = ["Chat", [
-		["Hide", m.toggleChat],
-	] ];
-	m.addMenu(m.thisMenu);
-
-
 
 	m.addStatusMessage = function(msg) {
 		m.addMessage(null, { type: "status", content: msg });
@@ -192,8 +206,10 @@
 		o.ws.addHook(i, m.handler[i]);
 	}
 
-
-
+	m.thisMenu = ["Chat", [
+		["Hide", m.toggleChat],
+	] ];
+	m.addMenu(m.thisMenu);
 
 	//// spam chat with some messages for testing
 
