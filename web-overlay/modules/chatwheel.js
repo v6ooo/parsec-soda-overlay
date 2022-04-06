@@ -20,22 +20,20 @@
 		],
 		[
 			'🤔',
-			'😊',
+			'💪',
 			'🥺',
-			'✨',
-			'💀',
 			'🔥',
+			'💀',
+			'😊',
 			'😍',
 			'🙏',
 		],
 	]
-	m.switchButton = [];
-	m.switchButtonRelease = null;
+	m.switchButton = [11];
 	m.triggerDistance = 0.6;
 	m.chatwheels = [];
 	m.showButton = [];
 	m.selectButton = [10,11];
-	m.selectButtonRelease = null;
 	m.selectType = 0;
 	
 	m.setSelectType = function() {
@@ -95,6 +93,16 @@
 		m.selectButton = b;
 		m.setSelectType();
 	}
+	m.setSwitchButton = function(b) {
+		for (let c of m.chatwheels) {
+			c.emoteOptions = emoteOptions[0];
+			c.setEmotes();
+			c.setPositions();
+		}
+		m.switchButton = b;
+		m.setSelectType();
+	}
+
 
 	m.changeSize = function(newSize) {
 		for (let c of m.chatwheels) {
@@ -149,6 +157,8 @@
 		locked = false;
 		wheelRadius = 2.1; // 100
 		showDuration = 5000;
+		switchButtonRelease = null;
+		selectButtonRelease = null;
 
 		constructor() {
 			this.parent = o.module.playerscreen.windows[m.chatwheels.length];
@@ -252,12 +262,12 @@
 
 			for (let b of m.switchButton) {
 				if (g.buttons[b].pressed) {
-					m.switchButtonRelease = b;
+					this.switchButtonRelease = b;
 					break;
 				}
 			}
-			if (m.switchButtonRelease && !g.buttons[m.switchButtonRelease].pressed) {
-				m.switchButtonRelease = null;
+			if (this.switchButtonRelease && !g.buttons[this.switchButtonRelease].pressed) {
+				this.switchButtonRelease = null;
 
 				this.emoteOptionsActive++;
 				if (this.emoteOptionsActive >= emoteOptions.length) {
@@ -316,12 +326,12 @@
 				if (m.selectType == 1) {
 					for (let b of m.selectButton) {
 						if (g.buttons[b].pressed && m.switchButton.indexOf(b) == -1) {
-							m.selectButtonRelease = b;
+							this.selectButtonRelease = b;
 							break;
 						}
 					}
-					if (m.selectButtonRelease && !g.buttons[m.selectButtonRelease].pressed) {
-						m.selectButtonRelease = null;
+					if (this.selectButtonRelease && !g.buttons[this.selectButtonRelease].pressed) {
+						this.selectButtonRelease = null;
 						activate = true;
 					}
 				}
@@ -402,6 +412,13 @@
 						["Press Any stick", m.setSelectButton, [10,11]],
 						["Press Right stick", m.setSelectButton, [11]],
 						["Press Left stick", m.setSelectButton, [10]],
+					]
+				],
+				["Switch wheel",
+					[
+						["Disabled", m.setSwitchButton, []],
+						["Press Right stick", m.setSwitchButton, [11]],
+						["Press Left stick", m.setSwitchButton, [10]],
 					]
 				],
 			]

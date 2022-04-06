@@ -12,7 +12,7 @@
 	m.host = {
 		id: 0,
 		userid: 0,
-		username: ""
+		username: "(Host)"
 	};
 	m.guests = [];
 	m.gamepads = [];
