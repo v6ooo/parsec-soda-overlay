@@ -64,12 +64,13 @@ You will need to manually edit javascript files if you wish to customize anythin
 
 <br>
 
+Some of the overlay may not work or show until you are connected and hosting with Soda.
+
 Use your mouse to control the Overlay. There is a hidden menu button in the top left corner of your screen.
 
 Nametags and chat wheel are in movable **player screen** windows. You can adjust the position with click and drag.
-If you change the position of Nametags or chat wheels in the overlay menu, you will need to select it again after moving windows.
 
-Chat wheel selection is always handled with the Right analog stick. The only thing that differs is how you show and select on the wheel.
+Chat wheel is always assigned to Right analog stick but you can change some settings.
 
 AutoHotkey hotkeys
 ```
