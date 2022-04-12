@@ -21,11 +21,19 @@
 	}
 
 	m.hideMenu = function() {
-		m.container.style.display = 'none';
+		m.container.style.display = "none";
+		for (let w of m.windows) {
+			w.style.display = "none"
+		}
+		for (let h of hoveredButton) {
+			h.className = "";
+		}
+		hoveredButton = [];
 	}
 
 	m.menuClick = function(event) {
 		// rootMenu.style.display = 'none';
+		if (!this.command) return;
 		if (!this.child) {
 			this.className = "click";
 			setTimeout(() => {
@@ -44,7 +52,7 @@
 		}
 	}
 
-	let windows = []; // ul
+	m.windows = []; // ul
 	let visibleWindows = []; // ul
 	let hoveredButton = []; // li
 
@@ -82,7 +90,7 @@
 	function createMenu(parent, data) {
 
 		let ul = document.createElement("ul");
-		windows.push(ul);
+		m.windows.push(ul);
 		m.container.appendChild(ul);
 		ul.parent = parent;
 
@@ -95,14 +103,18 @@
 		for (let i=0; i<data.length; i++) {
 			let li = document.createElement("li");
 			li.innerHTML = data[i][0];
-			li.addEventListener("mouseenter", m.menuMouseenter);
-			li.addEventListener("click", m.menuClick);
 			ul.appendChild(li);
 			if (Array.isArray(data[i][1])) {
+				li.addEventListener("mouseenter", m.menuMouseenter);
 				li.innerHTML += "<span>❯</span>";
 				li.child = createMenu(ul, data[i][1]);
 			}
+			else if (!data[i][1]) {
+				li.className = "nocommand";
+			}
 			else {
+				li.addEventListener("mouseenter", m.menuMouseenter);
+				li.addEventListener("click", m.menuClick);
 				li.command = data[i][1];
 				li.commandArgs = data[i].slice(2);
 			}
@@ -148,7 +160,7 @@
 			li.commandArgs = data.slice(2);
 		} 
 
-		m.sortMenu();
+		// m.sortMenu();
 	}
 
 	m.sortMenu = function() {

@@ -8,11 +8,11 @@ const config = {
     defaultScale: 100,
     defaultWindowAmount: 4,
     defaultNametagPosition: "top right",
+
+     // Can add single [ "yourName" ] or multiple [ "yourName", "yourName" ];
+     // All names currently replaced by host name
+    defaultLocalPlayers: [ ],
 }
-
-// If you don't have a local gamepad/player then add // to the below line
-// const localPlayer = [ { id: -1, userid: 0123456789, username: "YOURNAME", localplayer: true, metrics: { networkLatency: 0, fastRTs: 0, slowRTs: 0 } } ];
-
 
 // Don't touch!
 if (typeof exports != "undefined") { exports.config = config }

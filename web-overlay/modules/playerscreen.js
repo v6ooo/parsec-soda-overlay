@@ -11,8 +11,8 @@
 	m.container.style.flexWrap = 'wrap';
 	m.container.style.width = '100%';
 	m.container.style.height = '100%';
-    m.container.style.justifyContent = "center";
-    m.container.style.alignContent = "center";
+	m.container.style.justifyContent = "center";
+	m.container.style.alignContent = "center";
 
 	m.resizeLast = [window.innerWidth, window.innerHeight];
 	m.isLocked = true;
@@ -34,18 +34,22 @@
 	m.currentLayout = [];
 	let find = m.layouts.find(l => l[0] == defaultAmount);
 	if (find) m.currentLayout = find[1][0];
-	else m.layouts[0][1][0];
+	else m.currentLayout = m.layouts[0][1][0];
 
 	let windowsMenu = [];
 
 	m.addCallbacks = [];
 	m.removeCallbacks = [];
+	m.moveCallbacks = [];
 
 	m.addCallback = function(func) {
 		m.addCallbacks.push(func);
 	}
 	m.removeCallback = function(func) {
 		m.removeCallbacks.push(func);
+	}
+	m.moveCallback = function(func) {
+		m.moveCallbacks.push(func);
 	}
 
 	m.changeAmount = function(amount) {
@@ -76,7 +80,7 @@
 		let playerColors = ["#F52E2E", "#5463FF", "#FFC717", "#1F9E40", "#FF6619", "#24D4C4", "#D41CE5", "#4A4559"];
 		let svg = [];
 		svg.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${size[0]}" height="${size[1]}" viewBox="0 0 ${size[0]} ${size[1]}">`);
-		svg.push(`<rect x="0" y="0" width="${size[0]}" height="${size[1]}" fill="#010101" />`);
+		svg.push(`<rect x="0" y="0" width="${size[0]}" height="${size[1]}" fill="#111" />`);
 		let ww = size[0] / layout[0];
 		let wh = size[1] / layout[1];
 		for (let i=0; i<amount; i++) {
@@ -85,7 +89,7 @@
 			let posTop = top*wh;
 			let posLeft = left*ww;
 			let color = playerColors[i%(playerColors.length)];
-			svg.push(`<rect x="${posLeft}" y="${posTop}" width="${ww}" height="${wh}" stroke-width="3" stroke="#000" fill="${color}" />`);
+			svg.push(`<rect x="${posLeft}" y="${posTop}" width="${ww}" height="${wh}" stroke-width="3" stroke="#111" fill="${color}" />`);
 		}
 		svg.push(`</svg>`);
 		return svg.join();
@@ -113,6 +117,10 @@
 			w.style.left = Math.floor(left*ww) +"px";
 			w.style.width = ww +"px";
 			w.style.height = wh +"px";
+
+			for (let f of m.moveCallbacks) {
+				f(w);
+			}
 		}
 	}
 
@@ -232,12 +240,6 @@
 				win.style.top = (window.innerHeight - win.offsetHeight) +"px";
 				snapVert = true;
 			}
-			// top to top
-			distance = Math.abs(w.offsetTop - win.offsetTop);
-			if (!snapVert && distance <= snapDistance) {
-				win.style.top = w.offsetTop +"px";
-				snapVert = true;
-			}
 			// top to bottom
 			distance = Math.abs(w.offsetTop + w.offsetHeight - win.offsetTop);
 			if (!snapVert && distance <= snapDistance) {
@@ -248,6 +250,12 @@
 			distance = Math.abs(w.offsetTop - (win.offsetHeight + win.offsetTop));
 			if (!snapVert && distance <= snapDistance) {
 				win.style.top = (w.offsetTop - win.offsetHeight) +"px";
+				snapVert = true;
+			}
+			// top to top
+			distance = Math.abs(w.offsetTop - win.offsetTop);
+			if (!snapVert && distance <= snapDistance) {
+				win.style.top = w.offsetTop +"px";
 				snapVert = true;
 			}
 			// Horizontal snaps
@@ -263,12 +271,6 @@
 				win.style.left = (window.innerWidth - win.offsetWidth) +"px";
 				snapHori = true;
 			}
-			// left to left
-			distance = Math.abs(w.offsetLeft - win.offsetLeft);
-			if (!snapHori && distance <= snapDistance) {
-				win.style.left = w.offsetLeft +"px";
-				snapHori = true;
-			}
 			// left to right
 			distance = Math.abs(w.offsetLeft + w.offsetWidth - win.offsetLeft);
 			if (!snapHori && distance <= snapDistance) {
@@ -281,68 +283,61 @@
 				win.style.left = (w.offsetLeft - win.offsetWidth) +"px";
 				snapHori = true;
 			}
+			// left to left
+			distance = Math.abs(w.offsetLeft - win.offsetLeft);
+			if (!snapHori && distance <= snapDistance) {
+				win.style.left = w.offsetLeft +"px";
+				snapHori = true;
+			}
+		}
+
+		for (let f of m.moveCallbacks) {
+			f(win);
 		}
 	}
 
 	function dragElement(element) {
 		var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 		if (document.getElementById(element.id + "header")) {
-		  // if present, the header is where you move the DIV from:
-		  document.getElementById(element.id + "header").onmousedown = dragMouseDown;
-		} else {
-		  // otherwise, move the DIV from anywhere inside the DIV:
-		  element.onmousedown = dragMouseDown;
+			document.getElementById(element.id + "header").onmousedown = dragMouseDown;
 		}
-	  
-		function dragMouseDown(e) {
-		  e = e || window.event;
-		  e.preventDefault();
-		  // get the mouse cursor position at startup:
-		  pos3 = e.clientX;
-		  pos4 = e.clientY;
-		  document.onmouseup = closeDragElement;
-		  // call a function whenever the cursor moves:
-		  document.onmousemove = elementDrag;
+		else {
+			element.onmousedown = dragMouseDown;
+		}
 
-		//   for (let w of m.windows) {
-		// 	  w.style.zIndex = null;
-		//   }
-		//   element.style.zIndex = 3;
+		function dragMouseDown(e) {
+			e = e || window.event;
+			e.preventDefault();
+			pos3 = e.clientX;
+			pos4 = e.clientY;
+			document.onmouseup = closeDragElement;
+			document.onmousemove = elementDrag;
 			m.setZIndex(element);
 		}
-	  
-		function elementDrag(e) {
-		  e = e || window.event;
-		  e.preventDefault();
-		  // calculate the new cursor position:
-		  pos1 = pos3 - e.clientX;
-		  pos2 = pos4 - e.clientY;
-		  pos3 = e.clientX;
-		  pos4 = e.clientY;
 
-		  
+		function elementDrag(e) {
+			e = e || window.event;
+			e.preventDefault();
+			pos1 = pos3 - e.clientX;
+			pos2 = pos4 - e.clientY;
+			pos3 = e.clientX;
+			pos4 = e.clientY;
 			let newT = element.offsetTop - pos2;
 			let newL = element.offsetLeft - pos1;
-
 			if (newT < 0) newT = 0;
 			if (newT+element.offsetHeight > window.innerHeight) newT = window.innerHeight - element.offsetHeight;
 			if (newL < 0) newL = 0;
 			if (newL+element.offsetWidth > window.innerWidth) newL = window.innerWidth - element.offsetWidth;
-
-		  // set the element's new position:
-		  element.style.top = newT + "px";
-		  element.style.left = newL + "px";
+			element.style.top = newT + "px";
+			element.style.left = newL + "px";
 		}
-	  
+
 		function closeDragElement() {
-		  // stop moving when mouse button is released:
-		  document.onmouseup = null;
-		  document.onmousemove = null;
-
-		  // snapWindows also handles zIndex for
-		  m.snapWindows(element);
+			document.onmouseup = null;
+			document.onmousemove = null;
+			m.snapWindows(element);
 		}
-	  }
+	}
 
 	m.toggle = function() {
 		if (m.isLocked) m.showWindows();
@@ -377,7 +372,7 @@
 
 	m.init();
 	m.thisMenu = ["Player Screens", [
-		["Show Windows", o.module.playerscreen.toggle],
+		["Show Windows", m.toggle],
 	] ];
 	m.thisMenu[1] = m.thisMenu[1].concat(windowsMenu);
 	m.addMenu(m.thisMenu);

@@ -15,7 +15,8 @@
 	messages.className = "messages";
 	m.container.appendChild(messages);
 
-	o.module.menu.trigger.addEventListener("contextmenu", function(event) {
+	let gmod = o.getModule("menu");
+	gmod.trigger.addEventListener("contextmenu", function(event) {
 		m.container.style.display = (m.container.style.display != 'none') ? 'none' : 'block';
 		event.preventDefault();
 		return false;
@@ -120,6 +121,9 @@
 			let nameColor = stringToHslColor(data.username+data.id+data.userid, 100, 80);
 			html += '<span style="color: '+nameColor+'">'+ data.username +'</span><span class="hidden"> #'+ data.userid +'</span>: ';
 		}
+		else if (data.type == "command") {
+			data.content = data.content.replace("[ChatBot] | ","");
+		}
 		html += escapeHtml(data.content);
 		msg.innerHTML = html;
 		messages.appendChild(li);
@@ -152,7 +156,7 @@
 		guestconnect: template`${0} #${1} connected`,
 		guestdisconnect: template`${0} #${1} disconnected`,
 		guestban: template`${0} #${1} banned`,
-		// guestfail: template`${0} #${1} failed to connect: ${2}`,
+		guestfail: template`${0} #${1} failed to connect: ${2}`,
 		gamepadconnect: template`${0} took control of Gamepad ${1}`, // guest press a button
 		gamepadassign: template`${0} assigned Gamepad ${1}`, // drag&drop from guest list
 		gamepadremove: template`${0} removed from Gamepad ${1}`, // drag&drop from guest list
@@ -161,6 +165,12 @@
 	}
 
 	m.handler = {};
+
+	m.handler.identify = function(event, data) {
+		if (event.handlerStatus) {
+			m.addStatusMessage(`Host ID & name updated`);
+		}
+	}
 
 	m.handler.serverconnect = function(event, data) {
 		m.addStatusMessage( strings[data.type]() );
@@ -178,6 +188,9 @@
 			case 8: // disconnected
 				if (data.banned) m.addStatusMessage( strings.guestban( data.username, data.userid ));
 				else m.addStatusMessage( strings.guestdisconnect( data.username, data.userid ));
+				break;
+			case 10: // failed
+				m.addStatusMessage( strings.guestfail( data.username, data.userid, data.status ));
 				break;
 		}
 	}

@@ -1,3 +1,5 @@
+const debugMessages = false;
+
 const { config } = require('../config.js');
 
 const allowedRemoteAddress = ['127.0.0.1']; // ['127.0.0.1','::1','::ffff:127.0.0.1'];
@@ -46,6 +48,21 @@ function authenticate(ws, data, isBinary) {
 					clearTimeout(ws.authenticationTimer);
 					ws.authenticated = true;
 					close = false;
+					if (msg.userid) {
+						ws.hostUser = {
+							id: msg.id,
+							userid: msg.userid,
+							username: msg.username
+						}
+					}
+					else {
+						for (let i=connections.length-1; i>=0; i--) {
+							if (!connections[i].hostUser) continue;
+							let c = connections[i];
+							ws.send(`{"type":"identify","id":${c.hostUser.id},"userid":${c.hostUser.userid},"username":"${c.hostUser.username}"}`);
+						}
+
+					}
 				}
 			}
 		}
@@ -74,6 +91,7 @@ function on_message(data, isBinary) {
 	if (!this.authenticated && !auth) return;
 	if (isBinary) return;
 	const msg = data.toString();
+	if (debugMessages) console.log(msg);
 	sendMessage(this, msg);
 	if (this.connectionType == "soda") {
 		let jmsg = JSON.parse(msg);

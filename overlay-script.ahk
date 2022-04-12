@@ -9,6 +9,9 @@
 ;	Ctrl+Winkey+R to reload script
 ;	Enter to send message, Esc to cancel
 ;
+#NoEnv
+#SingleInstance Force
+Menu, Tray, Icon, icon.ico
 
 ;	closeOnSend true|false - If false, you will need press Escape to close
 closeOnSend := true
@@ -28,11 +31,7 @@ if not A_IsAdmin {
 	ExitApp
 }
 
-#NoEnv
-#SingleInstance Force
-;Menu, Tray, Icon, icons\c.ico
 SetKeyDelay, 0, 0
-
 windowClass := "ahk_class Parsec Soda"
 windowControl := 
 inputHeight := fontSize + (fontSize/1.4)

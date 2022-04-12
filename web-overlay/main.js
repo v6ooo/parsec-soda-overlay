@@ -5,6 +5,7 @@ z-index
 playerscreen		10-30
 websocketnametag	40
 chatwheel			50-53
+websocketpoll		60
 websocketchat		70
 newmenu				100-102
 
@@ -18,6 +19,7 @@ o.loadTheseJS = [
 ];
 o.loadTheseModules = [
 	"menu",
+	"localplayer",
 	"playerscreen",
 	"chatwheel",
 	// "controls",
@@ -26,6 +28,7 @@ o.loadTheseModules = [
 	"websocketnametag",
 	// "websocketusers",
 	// "text",
+	"websocketpoll",
 ];
 
 {
@@ -36,6 +39,11 @@ o.loadTheseModules = [
 		o.temporaryTimeStamp = event.timeStamp;
 		console.log("Loaded "+ fileName +" after "+ event.timeStamp +" ms");
 	});
+
+	o.getModule = function(name) {
+		if (o.module[name]) return o.module[name];
+		return null;
+	}
 
 	o.changeColorBrightness = function(hex, lum) {
 		hex = String(hex).replace(/[^0-9a-f]/gi, '');
@@ -50,6 +58,58 @@ o.loadTheseModules = [
 			rgb += ("00"+c).substr(c.length);
 		}
 		return rgb;
+	}
+
+	o.makeDraggable = function(element) {
+		let pos1 = 0
+		let pos2 = 0
+		let pos3 = 0
+		let pos4 = 0;
+		element.onmousedown = dragMouseDown;
+
+		function dragMouseDown(e) {
+			if (e.button == 2) {
+				element.style.top =  null;
+				element.style.left =  null;
+			}
+			else {
+				e = e || window.event;
+				e.preventDefault();
+				// get the mouse cursor position at startup:
+				pos3 = e.clientX;
+				pos4 = e.clientY;
+				document.onmouseup = closeDragElement;
+				document.onmousemove = elementDrag;
+			}
+		}
+
+		function elementDrag(e) {
+			e = e || window.event;
+			e.preventDefault();
+
+			pos1 = pos3 - e.clientX;
+			pos2 = pos4 - e.clientY;
+			pos3 = e.clientX;
+			pos4 = e.clientY;
+
+			let newT = element.offsetTop - pos2;
+			let newL = element.offsetLeft - pos1;
+
+			// prevent dragging offscreen
+			if (newT+element.offsetHeight > window.innerHeight) newT = window.innerHeight - element.offsetHeight -1;
+			if (newT < 1) newT = 1;
+			if (newL+element.offsetWidth > window.innerWidth) newL = window.innerWidth - element.offsetWidth -1;
+			if (newL < 1) newL = 1;
+
+			element.style.top = newT + "px";
+			element.style.left = newL + "px";
+		}
+
+		function closeDragElement() {
+			document.onmouseup = null;
+			document.onmousemove = null;
+		}
+
 	}
 
 	o.escapeHtml = function(text) {
@@ -82,7 +142,6 @@ o.loadTheseModules = [
 		document.body.appendChild(o.status);
 		window.onerror = function (msg, url, lineNo, columnNo, error) {
 			url = url.replace(/.+\/(.+)\.\w+/, "$1");
-			console.log(arguments);
 			var string = msg.toLowerCase();
 			var substring = "script error";
 			// if (string.indexOf(substring) > -1){

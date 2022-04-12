@@ -10,8 +10,8 @@
 	m.connection = { readyState: 4 };
 	// readyState 0=Connecting, 1=Open, 2=Closing, 3=Closed
 	m.host = {
-		id: 0,
-		userid: 0,
+		id: -1,
+		userid: -1,
 		username: "(Host)"
 	};
 	m.guests = [];
@@ -30,8 +30,9 @@
 	}
 
 	let setGamepad = function(index, id, userid, username) {
-		if (typeof localPlayer !== "undefined") {
-			index += localPlayer.length;
+		let gmod = o.getModule("localplayer");
+		if (gmod) {
+			index += gmod.players.length;
 		}
 		if (!m.gamepads[index]) m.gamepads[index] = {};
 		m.gamepads[index].id = id;
@@ -41,7 +42,7 @@
 
 	let executeHandler = function(event, msg) {
 		if (typeof m.handler[msg.type] == "function") {
-			m.handler[msg.type](event, msg);
+			event.handlerStatus = m.handler[msg.type](event, msg);
 		}
 		if (m.hooks[msg.type]) {
 			for (const h of m.hooks[msg.type]) {
@@ -71,32 +72,39 @@
 	}
 
 	m.handler.identify = function(e, data) {
-		if (data.userid > 0) {
+		if (data.userid > 0 && m.host.userid <= 0) {
 			m.host.id = data.id;
 			m.host.userid = data.userid;
 			m.host.username =  data.username;
+			let gmod = o.getModule("localplayer");
+			if (gmod) gmod.updateHost(data);
+			return true;
 		}
+		return false;
 	}
 
 	m.handler.metrics = function(e, data) {
 		m.guests = [];
-		if (typeof localPlayer !== "undefined") {
-			for (const lp of localPlayer) {
+		let gmod = o.getModule("localplayer")
+		if (gmod) {
+			for (const lp of gmod.players) {
 				m.guests.push(lp);
 			}
 		}
-		for (const d of data.content) {
-			m.guests.push({
-				id: d.id,
-				userid: d.userid,
-				username: d.username,
-				banned: d.banned,
-				metrics: {
-					networkLatency: d.networkLatency,
-					fastRTs: d.fastRTs,
-					slowRTs: d.slowRTs,
-				}
-			});
+		if (data) {
+			for (const d of data.content) {
+				m.guests.push({
+					id: d.id,
+					userid: d.userid,
+					username: d.username,
+					banned: d.banned,
+					metrics: {
+						networkLatency: d.networkLatency,
+						fastRTs: d.fastRTs,
+						slowRTs: d.slowRTs,
+					}
+				});
+			}
 		}
 	}
 
@@ -130,13 +138,16 @@
 
 	m.handler.gamepadall = function(e, data) {
 		m.gamepads = [];
-		if (typeof localPlayer !== "undefined") {
-			for (const lp of localPlayer) {
+		let gmod = o.getModule("localplayer");
+		if (gmod) {
+			for (const lp of gmod.players) {
 				m.gamepads.push(lp); // will push some extra metric data but who cares
 			}
 		}
-		for (const d of data.content) {
-			m.gamepads.push(d);
+		if (data) {
+			for (const d of data.content) {
+				m.gamepads.push(d);
+			}
 		}
 	}
 

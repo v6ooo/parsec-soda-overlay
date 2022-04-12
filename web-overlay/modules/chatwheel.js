@@ -20,52 +20,79 @@
 		],
 		[
 			'🤔',
-			'💪',
+			'🙏',
 			'🥺',
 			'🔥',
 			'💀',
 			'😊',
 			'😍',
-			'🙏',
+			'💪',
 		],
 	]
 	m.switchButton = [11];
 	m.triggerDistance = 0.6;
 	m.chatwheels = [];
 	m.showButton = [];
-	m.selectButton = [10,11];
+	m.selectButton = [10];
 	m.selectType = 0;
+	m.currentLayout = null;
 	
 	m.setSelectType = function() {
 		if (m.showButton.length > 0) m.selectType = 1;
-	}
-
-	m.setSelectType();
-
-	m.setPos = function(position) {
-		for (let c of m.chatwheels) {
-			if (position == "default") {
-				c.emotePopup.classList.remove("center");
-			}
-			else if (position == "center") {
-				c.emotePopup.classList.add("center");
-			}
-		}
+		else m.selectType = 0;
 	}
 
 	m.setPosReset = function() {
 		for (let w of m.chatwheels) {
-			w.emotePopup.classList.remove("top", "bottom", "left", "right");
-			w.wheel.classList.remove("top", "bottom", "left", "right");
+			w.emotePopup.className = "selectedemote";
+			w.wheel.className = "selectwheel";
 		}
 	}
 
-	m.setPosCenterMonitor = function(both, flipVert, flipHori, forceVert, forceHori, skipVert, skipHori) {
+	m.setPos = function(both, flipVert, flipHori, forceVert, forceHori, skipVert, skipHori) {
+		m.currentLayout = [ both, flipVert, flipHori, forceVert, forceHori, skipVert, skipHori ];
 		let vertMult = flipVert ? -1 : 1;
 		let horiMult = flipHori ? -1 : 1;
 		m.setPosReset();
 		let center = [window.innerWidth/2, window.innerHeight/2];
-		for (let w of o.module.playerscreen.windows) {
+		let gmod = o.getModule("playerscreen");
+		for (let w of gmod.windows) {
+			let e = w.getElementsByClassName("selectedemote")[0];
+			let s = w.getElementsByClassName("selectwheel")[0];
+			if (e) {
+				let windowVert = ((w.offsetTop+(w.offsetHeight/2)) - center[1]) * vertMult;
+				let windowHori = ((w.offsetLeft+(w.offsetWidth/2)) - center[0]) * horiMult;
+				if (forceVert < 0 || forceVert > 0) windowVert = forceVert *10;
+				if (forceHori < 0 || forceHori > 0) windowHori = forceHori *10;
+				let styleVert = windowVert < 0 ? "bottom" : "top";
+				let styleHori = windowHori < 0 ? "right" : "left";
+				console.log("%d    %d", windowVert, windowHori);
+				if (!skipVert && Math.abs(windowVert) > 5) e.classList.add(styleVert);
+				if (!skipHori && Math.abs(windowHori) > 5) e.classList.add(styleHori);
+				if (both) {
+					if (!skipVert && Math.abs(windowVert) > 5) s.classList.add(styleVert);
+					if (!skipHori && Math.abs(windowHori) > 5) s.classList.add(styleHori);
+				}
+			}
+		}
+	}
+
+	m.setPosResetSingle = function(w) {
+		let e = w.getElementsByClassName("selectedemote")[0];
+		let s = w.getElementsByClassName("selectwheel")[0];
+		e.classList.remove("top", "bottom", "left", "right");
+		s.classList.remove("top", "bottom", "left", "right");
+	}
+
+	m.setPosSingle = function(windowDom, both, flipVert, flipHori, forceVert, forceHori, skipVert, skipHori) {
+		if (!m.currentLayout) return;
+		[both, flipVert, flipHori, forceVert, forceHori, skipVert, skipHori] = m.currentLayout;
+		let vertMult = flipVert ? -1 : 1;
+		let horiMult = flipHori ? -1 : 1;
+		m.setPosReset();
+		let center = [window.innerWidth/2, window.innerHeight/2];
+		let gmod = o.getModule("playerscreen");
+		for (let w of gmod.windows) {
 			let e = w.getElementsByClassName("selectedemote")[0];
 			let s = w.getElementsByClassName("selectwheel")[0];
 			if (e) {
@@ -87,6 +114,10 @@
 
 	m.setShowButton = function(b) {
 		m.showButton = b;
+		for (let button of b) {
+			let f = m.switchButton.indexOf(button);
+			if (f != -1) m.switchButton.splice(f, 1);
+		}
 		m.setSelectType();
 	}
 	m.setSelectButton = function(b) {
@@ -100,6 +131,12 @@
 			c.setPositions();
 		}
 		m.switchButton = b;
+		for (let button of b) {
+			let f = m.showButton.indexOf(button);
+			if (f != -1) m.showButton.splice(f, 1);
+			f = m.selectButton.indexOf(button);
+			if (f != -1) m.selectButton.splice(f, 1);
+		}
 		m.setSelectType();
 	}
 
@@ -127,7 +164,8 @@
 	}
 
 	m.remove = function() {
-		if (m.chatwheels.length > o.module.playerscreen.windows.length) {
+		let gmod = o.getModule("playerscreen");
+		if (m.chatwheels.length > gmod.windows.length) {
 			let dead = m.chatwheels.pop();
 			dead.container.remove();
 			dead.container = null;
@@ -161,7 +199,8 @@
 		selectButtonRelease = null;
 
 		constructor() {
-			this.parent = o.module.playerscreen.windows[m.chatwheels.length];
+			let gmod = o.getModule("playerscreen");
+			this.parent = gmod.windows[m.chatwheels.length];
 
 			this.container = document.createElement("div");
 			this.container.className = "chatwheel";
@@ -185,6 +224,8 @@
 		setEmotes() {
 			this.wheel.innerHTML = "";
 			this.emotes = [];
+
+			this.wheelRadius = this.emoteOptions.length * 0.25;
 
 			for (let i=0; i<this.emoteOptions.length; i++) {
 				let emote = document.createElement('div');
@@ -358,12 +399,15 @@
 	}
 
 	m.init = function() {
-		for (let i=0; i<o.module.playerscreen.windows.length; i++) {
+		m.setSelectType();
+		let gmod = o.getModule("playerscreen");
+		for (let i=0; i<gmod.windows.length; i++) {
 			m.add();
 		}
 
-		o.module.playerscreen.addCallback(m.add);
-		o.module.playerscreen.removeCallback(m.remove);
+		gmod.addCallback(m.add);
+		gmod.removeCallback(m.remove);
+		gmod.moveCallback(m.setPosSingle);
 		requestAnimationFrame(m.update);
 	}
 	m.init();
@@ -374,6 +418,8 @@
 		sizeMenu.push([s+"%", m.changeSize, s]);
 	}
 
+	// both, flipVert, flipHori, forceVert, forceHori, skipVert, skipHori
+
 	m.thisMenu = ["Chat Wheel",[
 		["Turn OFF", m.toggle],
 		["Position",
@@ -381,18 +427,24 @@
 				["Reset (center)", m.setPosReset],
 				["Both",
 					[
-						["Top", m.setPosCenterMonitor, 1, 0, 0, 1, 0, 0, 1],
-						["Bottom", m.setPosCenterMonitor, 1, 0, 0, -1, 0, 0, 1],
-						["Towards Center", m.setPosCenterMonitor, 1, 0, 0],
-						["Outer Center", m.setPosCenterMonitor, 1, 1, 0],
-						["Outer Corners", m.setPosCenterMonitor, 1, 1, 1],
+						["Top Right", m.setPos, 1, 0, 0, 1, -1],
+						["Top Right & Bottom Right", m.setPos, 1, 1, 0, 0, -1],
+						["Top", m.setPos, 1, 1, 0, 1, 0, 0, 1],
+						["Bottom", m.setPos, 1, 1, 0, -1, 0, 0, 1],
+						["Towards Center", m.setPos, 1],
+						["Outer Center", m.setPos, 1, 1],
+						["Outer Corners", m.setPos, 1, 1, 1],
 					]
 				],
 				["Selected emote",
 					[
-						["Towards Center", m.setPosCenterMonitor, 0, 0, 0],
-						["Outer Center", m.setPosCenterMonitor, 1, 0, 0],
-						["Outer Corners", m.setPosCenterMonitor, 1, 1, 0],
+						["Top Right", m.setPos, 0, 0, 0, 1, -1],
+						["Top Right & Bottom Right", m.setPos, 0, 1, 0, 0, -1],
+						["Top", m.setPos, 0, 1, 0, 1, 0, 0, 1],
+						["Bottom", m.setPos, 0, 1, 0, -1, 0, 0, 1],
+						["Towards Center", m.setPos, 0],
+						["Outer Center", m.setPos, 0, 1],
+						["Outer Corners", m.setPos, 0, 1, 1],
 					]
 				]
 			]

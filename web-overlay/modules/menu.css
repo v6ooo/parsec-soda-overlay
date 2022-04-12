@@ -4,7 +4,7 @@
     left: 0;
     user-select: none;
     font-weight: bold;
-    text-shadow: 0 0 2px #000, 0 0 2px #000, 0 0 2px #000, 0 0 2px #000, 0 0 2px #000;
+    text-shadow: 0 0 2px #111, 0 0 2px #111, 0 0 2px #111, 0 0 2px #111, 0 0 2px #111;
 }
 
 #menu ul {
@@ -28,6 +28,11 @@
     right: 0.5em;
     font-size: 80%;
     font-weight: bold;
+}
+
+#menu .nocommand {
+    background: #111;
+    color: #999;
 }
 
 #menu .selected {

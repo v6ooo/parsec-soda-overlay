@@ -1,0 +1,95 @@
+#websocketpoll {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    user-select: none;
+    font-size: 150%;
+    z-index: 60;
+
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#websocketpoll .votebox {
+    word-wrap: break-word;
+    min-width: 10em;
+    max-width: 20em;
+    position: absolute;
+    background: #111;
+    border: 2px solid #010101;
+}
+
+#websocketpoll .timeleft {
+    width: 100%;
+    background: #010101;
+}
+
+#websocketpoll .timeleftbar {
+    width: 100%;
+    height: 0.3em;;
+    background: #090;
+}
+
+
+#websocketpoll .question {
+    padding: 0.1em 0.1em 0.1em 0.1em;
+    font-size: 2em;
+    text-align: left;
+}
+
+#websocketpoll .options {
+    width: 100%;
+}
+
+#websocketpoll .optioncontainer {
+    position: relative;
+    background: #010101;
+}
+
+#websocketpoll .optionline {
+    display: flex;
+    flex-wrap: nowrap;
+    position: relative;
+    z-index: 4;
+    border-top: 2px solid #010101;
+    width: 100%;
+    height: 100%;
+}
+
+#websocketpoll .optionnumber {
+    flex-grow: 0;
+    width: 1em;
+    text-align: left;
+    padding: 0.1em 0.2em 0.1em 0.2em;
+}
+
+#websocketpoll .optionname {
+    word-wrap: break-word;
+    max-width: 20em;
+    flex-grow: 1;
+    text-align: left;
+    padding: 0.1em 0.2em 0.1em 0.2em;
+}
+
+#websocketpoll .optionvotes {
+    flex-grow: 0;
+    width: 2em;
+    text-align: right;
+    padding: 0.1em 0.2em 0.1em 0.2em;
+    color: #FFF6;
+}
+
+#websocketpoll .optionprogressbar {
+    background: #060;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 0%;
+    height: 100%;
+    z-index: 2;
+    transition: width 0.5s linear 0s;
+}

@@ -7,6 +7,7 @@
 	let oldMetrics = {};
 
 	m.nametags = [];
+	m.currentLayout = null;
 
 	m.toggle = function() {
 		this.innerHTML = (m.enabled) ? 'Turn ON' : 'Turn OFF';
@@ -24,12 +25,42 @@
 		}
 	}
 
-	m.setPosCenter = function(flipVert, flipHori, forceVert, forceHori, skipVert, skipHori) {
+	m.setPos = function(flipVert, flipHori, forceVert, forceHori, skipVert, skipHori) {
+		m.currentLayout = [ flipVert, flipHori, forceVert, forceHori, skipVert, skipHori ];
 		let vertMult = flipVert ? -1 : 1;
 		let horiMult = flipHori ? -1 : 1;
 		m.setPosReset();
 		let center = [window.innerWidth/2, window.innerHeight/2];
-		for (let w of o.module.playerscreen.windows) {
+		let gmod = o.getModule("playerscreen");
+		for (let w of gmod.windows) {
+			let e = w.getElementsByClassName("nametag")[0];
+			if (e) {
+				let windowVert = ((w.offsetTop+(w.offsetHeight/2)) - center[1]) * vertMult;
+				let windowHori = ((w.offsetLeft+(w.offsetWidth/2)) - center[0]) * horiMult;
+				if (forceVert < 0 || forceVert > 0) windowVert = forceVert *10;
+				if (forceHori < 0 || forceHori > 0) windowHori = forceHori *10;
+				let styleVert = windowVert < 0 ? "bottom" : "top";
+				let styleHori = windowHori < 0 ? "right" : "left";
+				if (!skipVert && Math.abs(windowVert) > 1) e.classList.add(styleVert);
+				if (!skipHori && Math.abs(windowHori) > 1) e.classList.add(styleHori);
+			}
+		}
+	}
+
+	m.setPosResetSingle = function(windowDom) {
+		let n = windowDom.getElementsByClassName("nametag")[0];
+		n.className = "nametag";
+	}
+
+	m.setPosSingle = function(windowDom, flipVert, flipHori, forceVert, forceHori, skipVert, skipHori) {
+		if (!m.currentLayout) return;
+		[flipVert, flipHori, forceVert, forceHori, skipVert, skipHori] = m.currentLayout;
+		let vertMult = flipVert ? -1 : 1;
+		let horiMult = flipHori ? -1 : 1;
+		m.setPosResetSingle(windowDom);
+		let center = [window.innerWidth/2, window.innerHeight/2];
+		if (windowDom) {
+			let w = windowDom;
 			let e = w.getElementsByClassName("nametag")[0];
 			if (e) {
 				let windowVert = ((w.offsetTop+(w.offsetHeight/2)) - center[1]) * vertMult;
@@ -47,7 +78,8 @@
 	class Nametag {
 		constructor() {
 
-			this.parent = o.module.playerscreen.windows[m.nametags.length]
+			let gmod = o.getModule("playerscreen");
+			this.parent = gmod.windows[m.nametags.length];
 
 			let n = document.createElement("div");
 			// n.className = "nametag topright";
@@ -110,7 +142,8 @@
 	}
 
 	m.add = function() {
-		if (m.nametags.length < o.module.playerscreen.windows.length) {
+		let gmod = o.getModule("playerscreen");
+		if (m.nametags.length < gmod.windows.length) {
 			new Nametag();
 		}
 	}
@@ -124,7 +157,6 @@
 
 	// Remove all nametags without parents
 	m.removeDead = function() {
-		console.log("ns "+ m.nametags.length);
 		for (let i=m.nametags.length-1; i>=0; i--) {
 			if (!m.nametags[i].dom.parentNode.parentNode) {
 				m.nametags[i].dom.remove();
@@ -145,7 +177,7 @@
 
 	m.updateNametags = function(event, data) {
 		// clear old saved metrics on disconnect
-		if (data.type == "gueststate" && data.state == 8 && oldMetrics[data.id]) {
+		if (data && data.type == "gueststate" && data.state == 8 && oldMetrics[data.id]) {
 			delete oldMetrics[data.id];
 		}
 		if (m.enabled) {
@@ -163,24 +195,28 @@
 	o.ws.addHook("gueststate", m.updateNametags);
 
 	m.init = function() {
-		for (let i=0; i<o.module.playerscreen.windows.length; i++) {
+		let gmod = o.getModule("playerscreen");
+		for (let i=0; i<gmod.windows.length; i++) {
 			m.add();
 		}
-		o.module.playerscreen.addCallback(m.add);
-		o.module.playerscreen.removeCallback(m.remove);
+		gmod.addCallback(m.add);
+		gmod.removeCallback(m.remove);
+		gmod.moveCallback(m.setPosSingle);
+
+		m.updateNametags();
 	}
 	m.init();
 
 	m.thisMenu = ["Nametags", [
 		["Turn OFF", m.toggle],
 		["Position", [
-			["Top Right", m.setPosCenter, 0, 0, 1, -1],
-			["Top Right & Bottom Right", m.setPosCenter, 1, 0, 0, -1],
-			["Top", m.setPosCenter, 1, 0, 1, 0, 0, 1],
-			["Bottom", m.setPosCenter, 1, 0, -1, 0, 0, 1],
-			["Towards Center", m.setPosCenter],
-			["Outer Center", m.setPosCenter, 1],
-			["Outer Corners", m.setPosCenter, 1, 1],
+			["Top Right", m.setPos, 0, 0, 1, -1],
+			["Top Right & Bottom Right", m.setPos, 1, 0, 0, -1],
+			["Top", m.setPos, 1, 0, 1, 0, 0, 1],
+			["Bottom", m.setPos, 1, 0, -1, 0, 0, 1],
+			["Towards Center", m.setPos],
+			["Outer Center", m.setPos, 1],
+			["Outer Corners", m.setPos, 1, 1],
 		]],
 	]];
 	m.addMenu(m.thisMenu);
